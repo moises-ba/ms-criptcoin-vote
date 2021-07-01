@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option go_package = "moises-ba/ms-criptcoin-vote/criptcoinvote";
+//option java_multiple_files = true;
+//option java_package = "io.grpc.examples.helloworld";
+//option java_outer_classname = "HelloWorldProto";
+
+package criptcoinvote;
+
+service CriptCoinVoter {
+
+  rpc vote (VoteRequest) returns (VoteReply) {} 
+
+}
+
+  
+message VoteRequest {
+  string  coinId = 1;
+  bool yes    = 2;
+}
+
+
+message VoteReply {
+  string message = 1;
+}
