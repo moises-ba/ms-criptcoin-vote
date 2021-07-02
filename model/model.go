@@ -15,7 +15,9 @@ type User struct {
 }
 
 type Coin struct {
-	Uuid   string `bson:"_id,omitempty" json:"uuid,omitempty"`
-	CoinId string `bson:"coinId,omitempty" json:"coinId,omitempty"`
-	Name   string `bson:"name,omitempty" json:"name,omitempty"`
+	Id                    string `bson:"_id,omitempty" json:"uuid,omitempty"` //sigla da moeda
+	Name                  string `bson:"name,omitempty" json:"name,omitempty"`
+	Description           string `bson:"description,omitempty" json:"description,omitempty"`
+	TotalApprovedVotes    int    //totalizadores ignorados na persistencia
+	TotalDisapprovedVotes int    //totalizadores ignorados na persistencia
 }

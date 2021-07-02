@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+option go_package = "moises-ba/ms-criptcoin-vote/criptcoinvote";
+//option java_multiple_files = true;
+//option java_package = "io.grpc.examples.helloworld";
+//option java_outer_classname = "HelloWorldProto";
+
+package criptcoinvote;
+
+service CriptCoinApi {
+  rpc List(EmptyParameter) returns (CriptCoinList) {} 
+  rpc ListWithTotalVotes(EmptyParameter) returns (CriptCoinList) {} 
+  rpc Find(CriptCoinFilter) returns (CriptCoin) {} 
+  rpc Insert(CriptCoin) returns (CriptCoinReply) {} 
+  rpc Update(CriptCoin) returns (CriptCoinReply) {} 
+  rpc Delete(CriptCoin) returns (CriptCoinReply) {} 
+ 
+}
+
+  
+message EmptyParameter {}
+
+message CriptCoinReply {
+  string message = 1;
+}
+
+message CriptCoinFilter {
+  string coinId = 1;//sigla da moeda ex: btc, eos...
+}
+
+message CriptCoin {
+    string id = 1; //id baseado na sigla da moeda
+    string name = 3;
+    string description = 4;
+    uint32 totalApprovedVotes = 5; //total de likes
+    uint32 totalDisapprovedVotes = 6; //total deslikes    
+
+}
+
+
+message CriptCoinList {
+   repeated CriptCoin items = 1;
+}

@@ -7,7 +7,7 @@ option go_package = "moises-ba/ms-criptcoin-vote/criptcoinvote";
 
 package criptcoinvote;
 
-service CriptCoinVoter {
+service CriptCoinVoterApi {
 
   rpc vote (VoteRequest) returns (VoteReply) {} 
   rpc unVote (VoteRequest) returns (VoteReply) {} 

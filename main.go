@@ -27,16 +27,19 @@ func main() {
 	defer funcDisconnect()
 
 	//databases
-	mongoVoterDB := mongoClient.Database(utils.GetEnv(config.MONGO_QRCODE_BD, "criptcoinVotesDB"))
+	mongoCriptcoinDB := mongoClient.Database(utils.GetEnv(config.MONGO_QRCODE_BD, "criptcoinDB"))
 
 	//repositories
-	voterRepository := repository.NewVoterMongoRepository(mongoVoterDB)
+	voterRepository := repository.NewVoterMongoRepository(mongoCriptcoinDB)
+	criptCoinRepository := repository.NewCriptCoinMongoRepository(mongoCriptcoinDB)
 
 	//services
 	voterService := service.NewService(voterRepository)
+	criptCoinService := service.NewCriptCoinService(criptCoinRepository)
 
 	//controllers
 	voterController := controller.NewVoteController(voterService)
+	criptCoinController := controller.NewCriptCoinController(criptCoinService)
 
 	//iniciando o servicos
 	lis, err := net.Listen("tcp", port)
@@ -45,7 +48,9 @@ func main() {
 	}
 	s := grpc.NewServer()
 
-	pb.RegisterCriptCoinVoterServer(s, voterController)
+	//registrando controllers grpc
+	pb.RegisterCriptCoinVoterApiServer(s, voterController)
+	pb.RegisterCriptCoinApiServer(s, criptCoinController)
 
 	log.Logger().Printf("Servidor escutando em %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {

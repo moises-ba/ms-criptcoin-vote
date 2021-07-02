@@ -13,7 +13,7 @@ func NewVoteController(pVoterService service.VoterService) *voteController {
 }
 
 type voteController struct {
-	pb.UnimplementedCriptCoinVoterServer
+	pb.UnimplementedCriptCoinVoterApiServer
 	voterService service.VoterService
 }
 

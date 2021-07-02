@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	collection_qrcode_name = "votes"
+	collection_votes_name = "votes"
 )
 
 type voterRepository struct {
@@ -24,7 +24,7 @@ func NewVoterMongoRepository(database *mongo.Database) VoterRepository {
 	return &voterRepository{
 		client:     database.Client(),
 		database:   database,
-		collection: database.Collection(collection_qrcode_name),
+		collection: database.Collection(collection_votes_name),
 	}
 }
 

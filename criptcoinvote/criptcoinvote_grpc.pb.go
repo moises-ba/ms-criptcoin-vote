@@ -14,122 +14,122 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// CriptCoinVoterClient is the client API for CriptCoinVoter service.
+// CriptCoinVoterApiClient is the client API for CriptCoinVoterApi service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type CriptCoinVoterClient interface {
+type CriptCoinVoterApiClient interface {
 	Vote(ctx context.Context, in *VoteRequest, opts ...grpc.CallOption) (*VoteReply, error)
 	UnVote(ctx context.Context, in *VoteRequest, opts ...grpc.CallOption) (*VoteReply, error)
 }
 
-type criptCoinVoterClient struct {
+type criptCoinVoterApiClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewCriptCoinVoterClient(cc grpc.ClientConnInterface) CriptCoinVoterClient {
-	return &criptCoinVoterClient{cc}
+func NewCriptCoinVoterApiClient(cc grpc.ClientConnInterface) CriptCoinVoterApiClient {
+	return &criptCoinVoterApiClient{cc}
 }
 
-func (c *criptCoinVoterClient) Vote(ctx context.Context, in *VoteRequest, opts ...grpc.CallOption) (*VoteReply, error) {
+func (c *criptCoinVoterApiClient) Vote(ctx context.Context, in *VoteRequest, opts ...grpc.CallOption) (*VoteReply, error) {
 	out := new(VoteReply)
-	err := c.cc.Invoke(ctx, "/criptcoinvote.CriptCoinVoter/vote", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/criptcoinvote.CriptCoinVoterApi/vote", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *criptCoinVoterClient) UnVote(ctx context.Context, in *VoteRequest, opts ...grpc.CallOption) (*VoteReply, error) {
+func (c *criptCoinVoterApiClient) UnVote(ctx context.Context, in *VoteRequest, opts ...grpc.CallOption) (*VoteReply, error) {
 	out := new(VoteReply)
-	err := c.cc.Invoke(ctx, "/criptcoinvote.CriptCoinVoter/unVote", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/criptcoinvote.CriptCoinVoterApi/unVote", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// CriptCoinVoterServer is the server API for CriptCoinVoter service.
-// All implementations must embed UnimplementedCriptCoinVoterServer
+// CriptCoinVoterApiServer is the server API for CriptCoinVoterApi service.
+// All implementations must embed UnimplementedCriptCoinVoterApiServer
 // for forward compatibility
-type CriptCoinVoterServer interface {
+type CriptCoinVoterApiServer interface {
 	Vote(context.Context, *VoteRequest) (*VoteReply, error)
 	UnVote(context.Context, *VoteRequest) (*VoteReply, error)
-	mustEmbedUnimplementedCriptCoinVoterServer()
+	mustEmbedUnimplementedCriptCoinVoterApiServer()
 }
 
-// UnimplementedCriptCoinVoterServer must be embedded to have forward compatible implementations.
-type UnimplementedCriptCoinVoterServer struct {
+// UnimplementedCriptCoinVoterApiServer must be embedded to have forward compatible implementations.
+type UnimplementedCriptCoinVoterApiServer struct {
 }
 
-func (UnimplementedCriptCoinVoterServer) Vote(context.Context, *VoteRequest) (*VoteReply, error) {
+func (UnimplementedCriptCoinVoterApiServer) Vote(context.Context, *VoteRequest) (*VoteReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Vote not implemented")
 }
-func (UnimplementedCriptCoinVoterServer) UnVote(context.Context, *VoteRequest) (*VoteReply, error) {
+func (UnimplementedCriptCoinVoterApiServer) UnVote(context.Context, *VoteRequest) (*VoteReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UnVote not implemented")
 }
-func (UnimplementedCriptCoinVoterServer) mustEmbedUnimplementedCriptCoinVoterServer() {}
+func (UnimplementedCriptCoinVoterApiServer) mustEmbedUnimplementedCriptCoinVoterApiServer() {}
 
-// UnsafeCriptCoinVoterServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to CriptCoinVoterServer will
+// UnsafeCriptCoinVoterApiServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to CriptCoinVoterApiServer will
 // result in compilation errors.
-type UnsafeCriptCoinVoterServer interface {
-	mustEmbedUnimplementedCriptCoinVoterServer()
+type UnsafeCriptCoinVoterApiServer interface {
+	mustEmbedUnimplementedCriptCoinVoterApiServer()
 }
 
-func RegisterCriptCoinVoterServer(s grpc.ServiceRegistrar, srv CriptCoinVoterServer) {
-	s.RegisterService(&CriptCoinVoter_ServiceDesc, srv)
+func RegisterCriptCoinVoterApiServer(s grpc.ServiceRegistrar, srv CriptCoinVoterApiServer) {
+	s.RegisterService(&CriptCoinVoterApi_ServiceDesc, srv)
 }
 
-func _CriptCoinVoter_Vote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _CriptCoinVoterApi_Vote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(VoteRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CriptCoinVoterServer).Vote(ctx, in)
+		return srv.(CriptCoinVoterApiServer).Vote(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/criptcoinvote.CriptCoinVoter/vote",
+		FullMethod: "/criptcoinvote.CriptCoinVoterApi/vote",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CriptCoinVoterServer).Vote(ctx, req.(*VoteRequest))
+		return srv.(CriptCoinVoterApiServer).Vote(ctx, req.(*VoteRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CriptCoinVoter_UnVote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _CriptCoinVoterApi_UnVote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(VoteRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CriptCoinVoterServer).UnVote(ctx, in)
+		return srv.(CriptCoinVoterApiServer).UnVote(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/criptcoinvote.CriptCoinVoter/unVote",
+		FullMethod: "/criptcoinvote.CriptCoinVoterApi/unVote",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CriptCoinVoterServer).UnVote(ctx, req.(*VoteRequest))
+		return srv.(CriptCoinVoterApiServer).UnVote(ctx, req.(*VoteRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// CriptCoinVoter_ServiceDesc is the grpc.ServiceDesc for CriptCoinVoter service.
+// CriptCoinVoterApi_ServiceDesc is the grpc.ServiceDesc for CriptCoinVoterApi service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var CriptCoinVoter_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "criptcoinvote.CriptCoinVoter",
-	HandlerType: (*CriptCoinVoterServer)(nil),
+var CriptCoinVoterApi_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "criptcoinvote.CriptCoinVoterApi",
+	HandlerType: (*CriptCoinVoterApiServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "vote",
-			Handler:    _CriptCoinVoter_Vote_Handler,
+			Handler:    _CriptCoinVoterApi_Vote_Handler,
 		},
 		{
 			MethodName: "unVote",
-			Handler:    _CriptCoinVoter_UnVote_Handler,
+			Handler:    _CriptCoinVoterApi_UnVote_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
