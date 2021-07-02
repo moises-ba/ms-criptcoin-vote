@@ -19,6 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CriptCoinVoterClient interface {
 	Vote(ctx context.Context, in *VoteRequest, opts ...grpc.CallOption) (*VoteReply, error)
+	UnVote(ctx context.Context, in *VoteRequest, opts ...grpc.CallOption) (*VoteReply, error)
 }
 
 type criptCoinVoterClient struct {
@@ -38,11 +39,21 @@ func (c *criptCoinVoterClient) Vote(ctx context.Context, in *VoteRequest, opts .
 	return out, nil
 }
 
+func (c *criptCoinVoterClient) UnVote(ctx context.Context, in *VoteRequest, opts ...grpc.CallOption) (*VoteReply, error) {
+	out := new(VoteReply)
+	err := c.cc.Invoke(ctx, "/criptcoinvote.CriptCoinVoter/unVote", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CriptCoinVoterServer is the server API for CriptCoinVoter service.
 // All implementations must embed UnimplementedCriptCoinVoterServer
 // for forward compatibility
 type CriptCoinVoterServer interface {
 	Vote(context.Context, *VoteRequest) (*VoteReply, error)
+	UnVote(context.Context, *VoteRequest) (*VoteReply, error)
 	mustEmbedUnimplementedCriptCoinVoterServer()
 }
 
@@ -52,6 +63,9 @@ type UnimplementedCriptCoinVoterServer struct {
 
 func (UnimplementedCriptCoinVoterServer) Vote(context.Context, *VoteRequest) (*VoteReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Vote not implemented")
+}
+func (UnimplementedCriptCoinVoterServer) UnVote(context.Context, *VoteRequest) (*VoteReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnVote not implemented")
 }
 func (UnimplementedCriptCoinVoterServer) mustEmbedUnimplementedCriptCoinVoterServer() {}
 
@@ -84,6 +98,24 @@ func _CriptCoinVoter_Vote_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CriptCoinVoter_UnVote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VoteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CriptCoinVoterServer).UnVote(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/criptcoinvote.CriptCoinVoter/unVote",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CriptCoinVoterServer).UnVote(ctx, req.(*VoteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CriptCoinVoter_ServiceDesc is the grpc.ServiceDesc for CriptCoinVoter service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -94,6 +126,10 @@ var CriptCoinVoter_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "vote",
 			Handler:    _CriptCoinVoter_Vote_Handler,
+		},
+		{
+			MethodName: "unVote",
+			Handler:    _CriptCoinVoter_UnVote_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

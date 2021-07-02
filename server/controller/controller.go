@@ -3,7 +3,9 @@ package controller
 import (
 	"context"
 	pb "moises-ba/ms-criptcoin-vote/criptcoinvote"
+	"moises-ba/ms-criptcoin-vote/model"
 	"moises-ba/ms-criptcoin-vote/service"
+	"strconv"
 )
 
 func NewVoteController(pVoterService service.VoterService) *voteController {
@@ -16,5 +18,19 @@ type voteController struct {
 }
 
 func (s *voteController) Vote(ctx context.Context, in *pb.VoteRequest) (*pb.VoteReply, error) {
+
+	err := s.voterService.Vote(model.Vote{CoinId: in.GetCoinId(), UserId: "XXXX"})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.VoteReply{Message: "Voto registrado com sucesso: " + in.GetCoinId() + " " + strconv.FormatBool(in.GetApproved())}, nil
+}
+
+func (s *voteController) UnVote(ctx context.Context, in *pb.VoteRequest) (*pb.VoteReply, error) {
+
+	s.voterService.Vote(model.Vote{CoinId: in.GetCoinId(), UserId: "XXXX"})
+
 	return &pb.VoteReply{Message: "Hello again " + in.GetCoinId()}, nil
 }

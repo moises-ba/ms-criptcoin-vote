@@ -13,6 +13,10 @@ type voterService struct {
 	repository repository.VoterRepository
 }
 
-func (s *voterService) Vote(u model.User, vote model.Vote) error {
-	return s.repository.InsertOrUpdateVote(u, vote)
+func (s *voterService) Vote(vote model.Vote) error {
+	return s.repository.InsertOrUpdateVote(vote)
+}
+
+func (s *voterService) UnVote(vote model.Vote) error {
+	return s.repository.Delete(vote)
 }

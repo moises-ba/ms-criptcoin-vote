@@ -10,13 +10,13 @@ package criptcoinvote;
 service CriptCoinVoter {
 
   rpc vote (VoteRequest) returns (VoteReply) {} 
-
+  rpc unVote (VoteRequest) returns (VoteReply) {} 
 }
 
   
 message VoteRequest {
   string  coinId = 1;
-  bool yes    = 2;
+  bool approved    = 2;
 }
 
 
