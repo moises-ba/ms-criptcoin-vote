@@ -19,7 +19,7 @@ type voteController struct {
 
 func (s *voteController) Vote(ctx context.Context, in *pb.VoteRequest) (*pb.VoteReply, error) {
 
-	err := s.voterService.Vote(model.Vote{CoinId: in.GetCoinId(), UserId: "XXXX"})
+	err := s.voterService.Vote(model.Vote{CoinId: in.GetCoinId(), UserId: "XXXX", Approved: in.GetApproved()})
 
 	if err != nil {
 		return nil, err
@@ -30,7 +30,10 @@ func (s *voteController) Vote(ctx context.Context, in *pb.VoteRequest) (*pb.Vote
 
 func (s *voteController) UnVote(ctx context.Context, in *pb.VoteRequest) (*pb.VoteReply, error) {
 
-	s.voterService.Vote(model.Vote{CoinId: in.GetCoinId(), UserId: "XXXX"})
+	err := s.voterService.UnVote(model.Vote{CoinId: in.GetCoinId(), UserId: "XXXX"})
+	if err != nil {
+		return nil, err
+	}
 
-	return &pb.VoteReply{Message: "Hello again " + in.GetCoinId()}, nil
+	return &pb.VoteReply{Message: "Voto removido com sucesso: " + in.GetCoinId()}, nil
 }
