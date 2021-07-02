@@ -19,35 +19,75 @@ func NewCriptCoinController(pCriptcoinService service.CriptCoinService) *criptCo
 	return &criptCoinController{criptCoinService: pCriptcoinService}
 }
 
-func (c *criptCoinController) List(context.Context, *pb.EmptyParameter) (*pb.CriptCoinList, error) {
+func (c *criptCoinController) List(context context.Context, emptyParameter *pb.EmptyParameter) (*pb.CriptCoinList, error) {
 
 	coins, err := c.criptCoinService.List()
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.Internal, err.Error())
 	}
 
 	return generateListReturn(coins), nil
 }
 
-func (c *criptCoinController) ListWithTotalVotes(context.Context, *pb.EmptyParameter) (*pb.CriptCoinList, error) {
+func (c *criptCoinController) ListWithTotalVotes(context context.Context, emptyParameter *pb.EmptyParameter) (*pb.CriptCoinList, error) {
 	coins, err := c.criptCoinService.ListWithTotalVotes()
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.Internal, err.Error())
 	}
 
 	return generateListReturn(coins), nil
 }
-func (c *criptCoinController) Find(context.Context, *pb.CriptCoinFilter) (*pb.CriptCoin, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Find not implemented")
+func (c *criptCoinController) Find(context context.Context, filter *pb.CriptCoinFilter) (*pb.CriptCoin, error) {
+
+	coin, err := c.criptCoinService.Find(filter.CoinId)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, err.Error())
+	}
+
+	if coin == nil {
+		return nil, status.Errorf(codes.NotFound, "Moeda nao encontrada")
+	}
+
+	return convert(*coin), nil
 }
-func (c *criptCoinController) Insert(context.Context, *pb.CriptCoin) (*pb.CriptCoinReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Insert not implemented")
+
+func (c *criptCoinController) Insert(context context.Context, criptCoin *pb.CriptCoin) (*pb.CriptCoinReply, error) {
+
+	err := c.criptCoinService.Insert(convertToCoin(criptCoin))
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, err.Error())
+	}
+
+	return &pb.CriptCoinReply{Message: "Moeda criada com sucesso"}, nil
 }
-func (c *criptCoinController) Update(context.Context, *pb.CriptCoin) (*pb.CriptCoinReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
+
+func (c *criptCoinController) Update(context context.Context, criptCoin *pb.CriptCoin) (*pb.CriptCoinReply, error) {
+
+	err := c.criptCoinService.Update(convertToCoin(criptCoin))
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, err.Error())
+	}
+
+	return &pb.CriptCoinReply{Message: "Moeda atualizada com sucesso"}, nil
 }
-func (c *criptCoinController) Delete(context.Context, *pb.CriptCoin) (*pb.CriptCoinReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+
+func (c *criptCoinController) Delete(context context.Context, criptCoin *pb.CriptCoin) (*pb.CriptCoinReply, error) {
+	err := c.criptCoinService.Delete(convertToCoin(criptCoin))
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, err.Error())
+	}
+
+	return &pb.CriptCoinReply{Message: "Moeda excluida com sucesso"}, nil
+}
+
+func convertToCoin(criptCoin *pb.CriptCoin) model.Coin {
+
+	return model.Coin{
+		Id:          criptCoin.Id,
+		Name:        criptCoin.Name,
+		Description: criptCoin.Description,
+	}
+
 }
 
 //convert coin ou coinTotalizr em um pb.CriptCoin do grpc
