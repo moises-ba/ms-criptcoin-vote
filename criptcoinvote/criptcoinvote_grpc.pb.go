@@ -135,3 +135,116 @@ var CriptCoinVoterApi_ServiceDesc = grpc.ServiceDesc{
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "criptcoinvote.proto",
 }
+
+// VoteStreamClient is the client API for VoteStream service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type VoteStreamClient interface {
+	FetchVoteStream(ctx context.Context, in *EmptyParameterVote, opts ...grpc.CallOption) (VoteStream_FetchVoteStreamClient, error)
+}
+
+type voteStreamClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewVoteStreamClient(cc grpc.ClientConnInterface) VoteStreamClient {
+	return &voteStreamClient{cc}
+}
+
+func (c *voteStreamClient) FetchVoteStream(ctx context.Context, in *EmptyParameterVote, opts ...grpc.CallOption) (VoteStream_FetchVoteStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &VoteStream_ServiceDesc.Streams[0], "/criptcoinvote.VoteStream/FetchVoteStream", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &voteStreamFetchVoteStreamClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type VoteStream_FetchVoteStreamClient interface {
+	Recv() (*VoteStreamReply, error)
+	grpc.ClientStream
+}
+
+type voteStreamFetchVoteStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *voteStreamFetchVoteStreamClient) Recv() (*VoteStreamReply, error) {
+	m := new(VoteStreamReply)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+// VoteStreamServer is the server API for VoteStream service.
+// All implementations must embed UnimplementedVoteStreamServer
+// for forward compatibility
+type VoteStreamServer interface {
+	FetchVoteStream(*EmptyParameterVote, VoteStream_FetchVoteStreamServer) error
+	mustEmbedUnimplementedVoteStreamServer()
+}
+
+// UnimplementedVoteStreamServer must be embedded to have forward compatible implementations.
+type UnimplementedVoteStreamServer struct {
+}
+
+func (UnimplementedVoteStreamServer) FetchVoteStream(*EmptyParameterVote, VoteStream_FetchVoteStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method FetchVoteStream not implemented")
+}
+func (UnimplementedVoteStreamServer) mustEmbedUnimplementedVoteStreamServer() {}
+
+// UnsafeVoteStreamServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to VoteStreamServer will
+// result in compilation errors.
+type UnsafeVoteStreamServer interface {
+	mustEmbedUnimplementedVoteStreamServer()
+}
+
+func RegisterVoteStreamServer(s grpc.ServiceRegistrar, srv VoteStreamServer) {
+	s.RegisterService(&VoteStream_ServiceDesc, srv)
+}
+
+func _VoteStream_FetchVoteStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(EmptyParameterVote)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(VoteStreamServer).FetchVoteStream(m, &voteStreamFetchVoteStreamServer{stream})
+}
+
+type VoteStream_FetchVoteStreamServer interface {
+	Send(*VoteStreamReply) error
+	grpc.ServerStream
+}
+
+type voteStreamFetchVoteStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *voteStreamFetchVoteStreamServer) Send(m *VoteStreamReply) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+// VoteStream_ServiceDesc is the grpc.ServiceDesc for VoteStream service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var VoteStream_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "criptcoinvote.VoteStream",
+	HandlerType: (*VoteStreamServer)(nil),
+	Methods:     []grpc.MethodDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "FetchVoteStream",
+			Handler:       _VoteStream_FetchVoteStream_Handler,
+			ServerStreams: true,
+		},
+	},
+	Metadata: "criptcoinvote.proto",
+}

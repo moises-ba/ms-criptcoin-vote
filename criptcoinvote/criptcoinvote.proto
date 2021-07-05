@@ -23,3 +23,16 @@ message VoteRequest {
 message VoteReply {
   string message = 1;
 }
+
+
+service VoteStream {
+  rpc FetchVoteStream (EmptyParameterVote) returns (stream VoteStreamReply) {}
+}
+
+message EmptyParameterVote {}
+
+message VoteStreamReply {
+  string coinId = 1;
+	uint32 totalApprovedVotes = 2;
+	uint32 totalDisapprovedVotes = 3;
+}

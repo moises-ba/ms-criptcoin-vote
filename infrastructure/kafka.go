@@ -45,18 +45,19 @@ func (p *kafkaProducer) WriteMessage(message, topic string) error {
 
 ////////
 
+func NewKafkaConsumer() TopicConsumerIf {
+	return &kafkaConsumer{}
+}
+
 type kafkaConsumer struct {
+	reader *kafka.Reader
 }
 
 func (c *kafkaConsumer) Consume(topic string) (<-chan string, error) {
 
-	newUUID, err := uuid.NewV4()
-	if err != nil {
-		log.Logger().Error("Nao foi possivel gerar o UUID", err)
-		return nil, err
-	}
+	newUUID := uuid.NewV4().String()
 
-	r := kafka.NewReader(kafka.ReaderConfig{
+	c.reader = kafka.NewReader(kafka.ReaderConfig{
 		Brokers: strings.Split(config.GetKafkaBrokerURL(), ","),
 		Topic:   config.GetKafkaBrokerURL(),
 		Logger:  log.Logger(),
@@ -69,7 +70,7 @@ func (c *kafkaConsumer) Consume(topic string) (<-chan string, error) {
 		defer close(messageChan)
 
 		for {
-			msg, err := r.ReadMessage(context.TODO())
+			msg, err := c.reader.ReadMessage(context.TODO())
 			if err != nil {
 				log.Logger().Error("Nao foi possivel ler mensagem do topico ", err)
 				return
@@ -84,4 +85,12 @@ func (c *kafkaConsumer) Consume(topic string) (<-chan string, error) {
 	}()
 
 	return messageChan, nil
+}
+
+func (c *kafkaConsumer) Stop() error {
+	if c.reader != nil {
+		return c.reader.Close()
+	}
+
+	return nil
 }
