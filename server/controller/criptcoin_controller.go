@@ -48,7 +48,7 @@ func (c *criptCoinController) Find(context context.Context, filter *pb.CriptCoin
 		return nil, status.Errorf(codes.NotFound, "Moeda nao encontrada")
 	}
 
-	return convert(*coin), nil
+	return convert(coin), nil
 }
 
 func (c *criptCoinController) Insert(context context.Context, criptCoin *pb.CriptCoin) (*pb.CriptCoinReply, error) {
@@ -91,20 +91,20 @@ func convertToCoin(criptCoin *pb.CriptCoin) model.Coin {
 }
 
 //convert coin ou coinTotalizr em um pb.CriptCoin do grpc
-func convert(coin model.Coin) *pb.CriptCoin {
+func convert(coin *model.Coin) *pb.CriptCoin {
 
 	criptCoin := &pb.CriptCoin{Id: coin.Id,
 		Name:                  coin.Name,
 		Description:           coin.Description,
-		TotalApprovedVotes:    uint32(coin.TotalApprovedVotes),
-		TotalDisapprovedVotes: uint32(coin.TotalDisapprovedVotes),
+		TotalApprovedVotes:    uint32(coin.TotalApprovedVotes()),
+		TotalDisapprovedVotes: uint32(coin.TotalDisapprovedVotes()),
 	}
 
 	return criptCoin
 }
 
 //gera lista de retorno da listagem de moedas
-func generateListReturn(coins []model.Coin) *pb.CriptCoinList {
+func generateListReturn(coins []*model.Coin) *pb.CriptCoinList {
 	criptCoinList := new(pb.CriptCoinList)
 	criptCoinList.Items = make([]*pb.CriptCoin, 0, len(coins))
 	for i, coin := range coins {

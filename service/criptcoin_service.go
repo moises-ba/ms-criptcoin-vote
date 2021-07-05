@@ -13,11 +13,11 @@ func NewCriptCoinService(pRepository repository.CriptCoinRepository) CriptCoinSe
 	return &criptCoinService{repository: pRepository}
 }
 
-func (srv *criptCoinService) List() ([]model.Coin, error) {
+func (srv *criptCoinService) List() ([]*model.Coin, error) {
 	return srv.repository.List()
 }
 
-func (srv *criptCoinService) ListWithTotalVotes() ([]model.Coin, error) {
+func (srv *criptCoinService) ListWithTotalVotes() ([]*model.Coin, error) {
 	return srv.repository.ListWithTotalVotes()
 }
 

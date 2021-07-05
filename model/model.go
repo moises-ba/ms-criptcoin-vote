@@ -15,9 +15,27 @@ type User struct {
 }
 
 type Coin struct {
-	Id                    string `bson:"_id,omitempty" json:"uuid,omitempty"` //sigla da moeda
-	Name                  string `bson:"name,omitempty" json:"name,omitempty"`
-	Description           string `bson:"description,omitempty" json:"description,omitempty"`
-	TotalApprovedVotes    int    //totalizadores ignorados na persistencia
-	TotalDisapprovedVotes int    //totalizadores ignorados na persistencia
+	Id          string  `bson:"_id,omitempty" json:"uuid,omitempty"` //sigla da moeda
+	Name        string  `bson:"name,omitempty" json:"name,omitempty"`
+	Description string  `bson:"description,omitempty" json:"description,omitempty"`
+	Votes       []*Vote //ignorar na persistencia
+}
+
+func (c *Coin) TotalApprovedVotes() int {
+	return countVotes(c.Votes, true)
+}
+
+func (c *Coin) TotalDisapprovedVotes() int {
+	return countVotes(c.Votes, false)
+}
+
+//conta votos contrarios ou a favor dependendo do paramentro pApproved
+func countVotes(votes []*Vote, pApproved bool) int {
+	total := 0
+	for _, v := range votes {
+		if v.Approved == pApproved {
+			total++
+		}
+	}
+	return total
 }

@@ -8,8 +8,8 @@ type VoterService interface {
 }
 
 type CriptCoinService interface {
-	List() ([]model.Coin, error)
-	ListWithTotalVotes() ([]model.Coin, error)
+	List() ([]*model.Coin, error)
+	ListWithTotalVotes() ([]*model.Coin, error)
 	Find(id string) (*model.Coin, error)
 	Insert(criptCoin model.Coin) error
 	Update(criptCoin model.Coin) error
