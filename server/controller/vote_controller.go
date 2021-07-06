@@ -45,7 +45,7 @@ func (s *voteController) UnVote(ctx context.Context, in *pb.VoteRequest) (*pb.Vo
 	return &pb.VoteReply{Message: "Voto removido com sucesso: " + in.GetCoinId()}, nil
 }
 
-func (s *voteController) FetchVoteStream(in *pb.EmptyParameterVote, voteStream pb.VoteStream_FetchVoteStreamServer) error {
+func (s *voteController) FetchVoteStream(in *pb.EmptyParameterVote, stream pb.CriptCoinVoterApi_FetchVoteStreamServer) error {
 
 	consumer := messaging.NewKafkaConsumer()
 
@@ -70,7 +70,7 @@ func (s *voteController) FetchVoteStream(in *pb.EmptyParameterVote, voteStream p
 			TotalDisapprovedVotes: uint32(coinVoteTopicMessage.TotalDisapprovedVotes),
 		}
 
-		if err := voteStream.Send(&resp); err != nil {
+		if err := stream.Send(&resp); err != nil {
 			log.Logger().Errorf("Erro ao enviar stream %v", err)
 			break
 		}
@@ -82,4 +82,5 @@ func (s *voteController) FetchVoteStream(in *pb.EmptyParameterVote, voteStream p
 	}
 
 	return nil
+
 }

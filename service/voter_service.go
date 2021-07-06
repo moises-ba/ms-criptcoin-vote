@@ -20,11 +20,15 @@ type voterService struct {
 func (s *voterService) Vote(vote model.Vote) error {
 	err := s.repository.InsertOrUpdateVote(vote)
 	if err != nil {
-		log.Logger().Error("Falha ao inserir voto", err)
+		log.Logger().Error("Falha ao inserir voto ", err)
 		return err
 	}
 
-	return s.sendTotalToTopic(vote.CoinId)
+	if err = s.sendTotalToTopic(vote.CoinId); err != nil {
+		log.Logger().Error("Nao foi possivel enviar a mensagem para a fila.", err)
+	}
+
+	return nil
 }
 
 func (s *voterService) UnVote(vote model.Vote) error {

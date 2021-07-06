@@ -43,27 +43,21 @@ func (repo *voterRepository) InsertOrUpdateVote(vote model.Vote) error {
 	}
 
 	singleResult := repo.collection.FindOneAndUpdate(ctx, filter, update)
+	if singleResult.Err() == nil { //se o voto foi atualizado, retorna
+		return nil
+	}
 
-	if singleResult.Err() != nil {
+	if singleResult.Err() != nil && singleResult.Err() != mongo.ErrNoDocuments { //se nenhum update foi feito e o erro for diferente de doumento nao encontrado
 		return singleResult.Err()
 	}
 
-	voteUpdated := model.Vote{}
-	decodeErr := singleResult.Decode(&voteUpdated)
-	if decodeErr != nil {
-		return decodeErr
+	////se nenhum update foi feito, insere
+	if _, err := repo.collection.InsertOne(ctx, vote); err == nil {
+		return nil
+	} else {
+		return err
 	}
 
-	//caso um voto nao tenha existido anteriormente, inserimos um voto
-	if voteUpdated.Uuid != "" {
-		if _, err := repo.collection.InsertOne(ctx, vote); err == nil {
-			return nil
-		} else {
-			return err
-		}
-	}
-
-	return nil
 }
 
 /**
@@ -88,7 +82,7 @@ func (repo *voterRepository) FindVotes(coinId string) ([]*model.Vote, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	filter := bson.M{"id": coinId}
+	filter := bson.M{"coinId": coinId}
 
 	cur, err := repo.collection.Find(ctx, filter)
 	if err != nil {

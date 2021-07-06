@@ -3,7 +3,7 @@ package model
 type Vote struct {
 	Uuid     string `bson:"_id,omitempty" json:"uuid,omitempty"`
 	UserId   string `bson:"userId,omitempty" json:"userId,omitempty"`
-	CoinId   string `bson:"CoinId,omitempty" json:"CoinId,omitempty"`
+	CoinId   string `bson:"coinId,omitempty" json:"coinId,omitempty"`
 	Approved bool   `bson:"approved,omitempty" json:"approved,omitempty"`
 }
 

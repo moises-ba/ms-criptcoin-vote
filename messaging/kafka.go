@@ -11,12 +11,17 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
+func init() {
+	createTopic() //cria o topico no inicio
+}
+
 func NewKafkaProducer() TopicProducerIf {
 
 	w := kafka.NewWriter(kafka.WriterConfig{
-		Brokers: strings.Split(config.GetKafkaBrokerURL(), ","),
-		Topic:   config.GetKafkaBrokerURL(),
-		Logger:  log.Logger(),
+		Brokers:  strings.Split(config.GetKafkaBrokerURL(), ","),
+		Topic:    config.GetVoteTopic(),
+		Balancer: &kafka.LeastBytes{},
+		Logger:   log.Logger(),
 	})
 
 	return &kafkaProducer{
@@ -36,9 +41,9 @@ func (p *kafkaProducer) WriteMessage(objMessage interface{}, topic string) error
 		return err
 	}
 
-	err = p.writer.WriteMessages(context.TODO(), kafka.Message{
-		//Key: []byte(strconv.Itoa(i)),
-		// create an arbitrary message payload for the value
+	err = p.writer.WriteMessages(context.Background(), kafka.Message{
+		//	Key:   []byte(strconv.Itoa(rand.Intn(100))), //melhora a key
+		//Partition: 0,
 		Value: message,
 	})
 
@@ -49,8 +54,6 @@ func (p *kafkaProducer) WriteMessage(objMessage interface{}, topic string) error
 
 	return nil
 }
-
-////////
 
 func NewKafkaConsumer() TopicConsumerIf {
 	return &kafkaConsumer{}
@@ -65,10 +68,11 @@ func (c *kafkaConsumer) Consume(topic string) (<-chan string, error) {
 	newUUID := uuid.NewV4().String()
 
 	c.reader = kafka.NewReader(kafka.ReaderConfig{
-		Brokers: strings.Split(config.GetKafkaBrokerURL(), ","),
-		Topic:   config.GetKafkaBrokerURL(),
-		Logger:  log.Logger(),
-		GroupID: "group_" + newUUID,
+		Brokers:     strings.Split(config.GetKafkaBrokerURL(), ","),
+		Topic:       config.GetVoteTopic(),
+		Logger:      log.Logger(),
+		GroupID:     "group_" + newUUID,
+		StartOffset: kafka.LastOffset,
 	})
 
 	messageChan := make(chan string)
@@ -100,4 +104,26 @@ func (c *kafkaConsumer) Stop() error {
 	}
 
 	return nil
+}
+
+func createTopic() {
+
+	conn, err := kafka.Dial("tcp", config.GetKafkaBrokerURL())
+	if err != nil {
+		panic(err.Error())
+	}
+
+	topicConfigs := []kafka.TopicConfig{
+		kafka.TopicConfig{
+			Topic:             config.GetVoteTopic(),
+			NumPartitions:     1,
+			ReplicationFactor: 1,
+		},
+	}
+
+	err = conn.CreateTopics(topicConfigs...)
+	if err != nil {
+		panic(err.Error())
+	}
+
 }

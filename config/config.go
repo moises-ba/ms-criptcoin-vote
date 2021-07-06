@@ -10,6 +10,8 @@ const (
 
 	KAFKA_BROKER_URL = "KAFKA_BROKER_URL"
 	VOTE_TOPIC       = "KAFKA_VOTE_TOPIC"
+
+	JWT_PASSWORD = "JWT_PASSWORD"
 )
 
 func GetMogoServerURL() string {
@@ -29,5 +31,9 @@ func GetVoteTopic() string {
 }
 
 func GetKafkaBrokerURL() string {
-	return utils.GetEnv(KAFKA_BROKER_URL, "localhost:9091")
+	return utils.GetEnv(KAFKA_BROKER_URL, "localhost:9092")
+}
+
+func GetJWTPassword() string {
+	return utils.GetEnv(JWT_PASSWORD, "chave_jwt")
 }
