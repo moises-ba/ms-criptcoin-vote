@@ -4,6 +4,7 @@ import (
 	"context"
 	pb "moises-ba/ms-criptcoin-vote/criptcoinvote"
 	"moises-ba/ms-criptcoin-vote/log"
+	"strconv"
 
 	"google.golang.org/grpc"
 )
@@ -45,6 +46,60 @@ func deleteMoeda(conn *grpc.ClientConn, id, name, description string) error {
 	return nil
 }
 
+func listarMoedas(conn *grpc.ClientConn) {
+	clientCiptcoin := pb.NewCriptCoinApiClient(conn)
+
+	reply, err := clientCiptcoin.List(context.Background(), &pb.EmptyParameter{})
+	if err != nil {
+		log.Logger().Fatalf("Falha ao Listar %v", err)
+	}
+
+	for _, coin := range reply.Items {
+		log.Logger().Infoln("Moeda -> " + " " + coin.Id + " " + coin.Name + " " + coin.Description)
+	}
+
+}
+
+func findMoeda(conn *grpc.ClientConn, coinId string) {
+	clientCiptcoin := pb.NewCriptCoinApiClient(conn)
+
+	reply, err := clientCiptcoin.Find(context.Background(), &pb.CriptCoinFilter{CoinId: coinId})
+	if err != nil {
+		log.Logger().Fatalf("Falha ao localizar moeda pelo ID %v", err)
+	}
+
+	log.Logger().Infoln("Moeda -> " + " " + reply.Id + " " + reply.Name + " " + reply.Description)
+
+}
+
+func listarMoedasTotalizandoVotos(conn *grpc.ClientConn) {
+	clientCiptcoin := pb.NewCriptCoinApiClient(conn)
+
+	reply, err := clientCiptcoin.ListWithTotalVotes(context.Background(), &pb.EmptyParameter{})
+	if err != nil {
+		log.Logger().Fatalf("Falha ao Listar moeda totalizando os votos %v", err)
+	}
+
+	for _, coin := range reply.Items {
+		log.Logger().Infoln("Moeda -> " + " " + coin.Id + " " + coin.Name + " " + coin.Description +
+			" likes: " + strconv.Itoa(int(coin.GetTotalApprovedVotes())) +
+			" deslikes: " + strconv.Itoa(int(coin.GetTotalDisapprovedVotes())))
+	}
+
+}
+
+func likeUnlikeCoin(conn *grpc.ClientConn, coinId string, like bool) {
+	clientCiptcoin := pb.NewCriptCoinVoterApiClient(conn)
+
+	reply, err := clientCiptcoin.Vote(context.Background(), &pb.VoteRequest{CoinId: coinId, Approved: like})
+	if err != nil {
+		log.Logger().Fatalf("Falha ao votar na moeda  %v", err)
+	}
+
+	log.Logger().Infoln("Voto computado: " + reply.Message)
+
+}
+
 func main() {
 
 	// dail server
@@ -53,11 +108,17 @@ func main() {
 		log.Logger().Fatalf("Impossivel conectar no servidor %v", err)
 	}
 
+	//listarMoedasTotalizandoVotos(conn)
+
+	findMoeda(conn, "eoss")
+
 	//inserirMoeda(conn, "eos", "Eos", "Moeda eos")
 
 	//updateMoeda(conn, "btc", "Bitcoin", "Moeda bitcoin Alterado")
 
-	deleteMoeda(conn, "btc", "Bitcoin", "Moeda bitcoin Alterado")
+	//deleteMoeda(conn, "btc", "Bitcoin", "Moeda bitcoin Alterado")
+
+	//likeUnlikeCoin(conn, "eos", true)
 
 	/*
 		// create stream

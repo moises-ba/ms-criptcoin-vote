@@ -87,7 +87,12 @@ func (repo *criptCoinMongoRepository) Find(id string) (*model.Coin, error) {
 
 	coin := new(model.Coin)
 
-	if err := repo.collection.FindOne(ctx, bson.M{}).Decode(coin); err != nil {
+	if err := repo.collection.FindOne(ctx, primitive.M{"_id": id}).Decode(coin); err != nil {
+
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+
 		log.Logger().Error("Falha ao pesquisar moeda", err)
 		return nil, err
 	}

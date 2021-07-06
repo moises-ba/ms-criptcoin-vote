@@ -106,7 +106,7 @@ func convert(coin *model.Coin) *pb.CriptCoin {
 //gera lista de retorno da listagem de moedas
 func generateListReturn(coins []*model.Coin) *pb.CriptCoinList {
 	criptCoinList := new(pb.CriptCoinList)
-	criptCoinList.Items = make([]*pb.CriptCoin, 0, len(coins))
+	criptCoinList.Items = make([]*pb.CriptCoin, len(coins))
 	for i, coin := range coins {
 		criptCoinList.Items[i] = convert(coin)
 	}
