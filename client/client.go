@@ -57,7 +57,7 @@ func main() {
 
 	//updateMoeda(conn, "btc", "Bitcoin", "Moeda bitcoin Alterado")
 
-	//deleteMoeda(conn, "btc", "Bitcoin", "Moeda bitcoin Alterado")
+	deleteMoeda(conn, "btc", "Bitcoin", "Moeda bitcoin Alterado")
 
 	/*
 		// create stream
