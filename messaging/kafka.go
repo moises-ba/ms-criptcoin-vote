@@ -1,7 +1,8 @@
-package infrastructure
+package messaging
 
 import (
 	"context"
+	"encoding/json"
 	"moises-ba/ms-criptcoin-vote/config"
 	"moises-ba/ms-criptcoin-vote/log"
 	"strings"
@@ -27,12 +28,18 @@ type kafkaProducer struct {
 	writer *kafka.Writer
 }
 
-func (p *kafkaProducer) WriteMessage(message, topic string) error {
+func (p *kafkaProducer) WriteMessage(objMessage interface{}, topic string) error {
 
-	err := p.writer.WriteMessages(context.TODO(), kafka.Message{
+	message, err := json.Marshal(objMessage)
+	if err != nil {
+		log.Logger().Error("Falha ao transformar struct em json.", err)
+		return err
+	}
+
+	err = p.writer.WriteMessages(context.TODO(), kafka.Message{
 		//Key: []byte(strconv.Itoa(i)),
 		// create an arbitrary message payload for the value
-		Value: []byte(message),
+		Value: message,
 	})
 
 	if err != nil {

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"moises-ba/ms-criptcoin-vote/log"
 	"moises-ba/ms-criptcoin-vote/model"
 	"time"
 
@@ -69,7 +70,7 @@ func (repo *voterRepository) InsertOrUpdateVote(vote model.Vote) error {
 Deleta um voto
 **/
 func (repo *voterRepository) Delete(vote model.Vote) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	filter := bson.D{primitive.E{Key: "userId", Value: vote.UserId},
@@ -81,4 +82,26 @@ func (repo *voterRepository) Delete(vote model.Vote) error {
 	}
 
 	return nil
+}
+
+func (repo *voterRepository) FindVotes(coinId string) ([]*model.Vote, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"id": coinId}
+
+	cur, err := repo.collection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cur.Close(ctx)
+
+	var votes []*model.Vote
+	if err = cur.All(ctx, &votes); err != nil {
+		log.Logger().Error("Falha ao converter votos", err)
+		return nil, err
+	}
+
+	return votes, nil
+
 }

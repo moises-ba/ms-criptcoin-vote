@@ -1,7 +1,7 @@
-package infrastructure
+package messaging
 
 type TopicProducerIf interface {
-	WriteMessage(message, topic string) error
+	WriteMessage(message interface{}, topic string) error
 }
 
 type TopicConsumerIf interface {

@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"moises-ba/ms-criptcoin-vote/config"
 	pb "moises-ba/ms-criptcoin-vote/criptcoinvote"
-	"moises-ba/ms-criptcoin-vote/infrastructure"
 	"moises-ba/ms-criptcoin-vote/log"
+	"moises-ba/ms-criptcoin-vote/messaging"
 	"moises-ba/ms-criptcoin-vote/model"
 	"moises-ba/ms-criptcoin-vote/service"
 	"strconv"
@@ -47,7 +47,7 @@ func (s *voteController) UnVote(ctx context.Context, in *pb.VoteRequest) (*pb.Vo
 
 func (s *voteController) FetchVoteStream(in *pb.EmptyParameterVote, voteStream pb.VoteStream_FetchVoteStreamServer) error {
 
-	consumer := infrastructure.NewKafkaConsumer()
+	consumer := messaging.NewKafkaConsumer()
 
 	messagesChan, err := consumer.Consume(config.GetVoteTopic())
 	if err != nil {
@@ -57,7 +57,7 @@ func (s *voteController) FetchVoteStream(in *pb.EmptyParameterVote, voteStream p
 	for message := range messagesChan {
 
 		//convertendo json da mensagem em um objeto struct
-		coinVoteTopicMessage := infrastructure.CoinVoteTopicMessage{}
+		coinVoteTopicMessage := messaging.CoinVoteTopicMessage{}
 		if err := json.Unmarshal([]byte(message), &coinVoteTopicMessage); err != nil {
 			log.Logger().Errorf("Erro ao decodificar json %v %v", message, err.Error())
 			break
@@ -74,6 +74,11 @@ func (s *voteController) FetchVoteStream(in *pb.EmptyParameterVote, voteStream p
 			log.Logger().Errorf("Erro ao enviar stream %v", err)
 			break
 		}
+	}
+
+	err = consumer.Stop()
+	if err != nil {
+		log.Logger().Error("Falha ao efetuar stop no consumer", err)
 	}
 
 	return nil

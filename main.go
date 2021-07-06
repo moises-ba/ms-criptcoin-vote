@@ -4,6 +4,7 @@ import (
 	"moises-ba/ms-criptcoin-vote/config"
 	pb "moises-ba/ms-criptcoin-vote/criptcoinvote"
 	"moises-ba/ms-criptcoin-vote/log"
+	"moises-ba/ms-criptcoin-vote/messaging"
 	"moises-ba/ms-criptcoin-vote/repository"
 	"moises-ba/ms-criptcoin-vote/server/controller"
 	"moises-ba/ms-criptcoin-vote/service"
@@ -34,7 +35,7 @@ func main() {
 	criptCoinRepository := repository.NewCriptCoinMongoRepository(mongoCriptcoinDB)
 
 	//services
-	voterService := service.NewService(voterRepository)
+	voterService := service.NewService(voterRepository, messaging.NewKafkaProducer())
 	criptCoinService := service.NewCriptCoinService(criptCoinRepository)
 
 	//controllers
