@@ -97,15 +97,14 @@ func likeUnlikeCoin(conn *grpc.ClientConn, coinId string, like bool) {
 
 	//gerando token
 	jwtManager := security.NewJWTManager(config.GetJWTPassword(), 5*time.Minute)
-	user := security.User{Username: "Moises Almeida", Role: "ADMIN"}
+	user := security.User{Username: "moises", Role: "ADMIN"}
 	token, err := jwtManager.Generate(&user)
 	if err != nil {
 		log.Logger().Fatalf("Falha ao gerar token %v", err)
 	}
 
 	//adicionando o token no contexto
-	ctx := context.Background()
-	metadata.AppendToOutgoingContext(ctx, "authorization_jwt_token", token)
+	ctx := metadata.AppendToOutgoingContext(context.Background(), "authorization_jwt_token", token)
 
 	clientCiptcoin := pb.NewCriptCoinVoterApiClient(conn)
 	reply, err := clientCiptcoin.Vote(ctx, &pb.VoteRequest{CoinId: coinId, Approved: like})
@@ -169,7 +168,7 @@ func main() {
 
 	//listarMoedasTotalizandoVotos(conn)
 
-	//findMoeda(conn, "eoss")
+	//findMoeda(conn, "eos")
 
 	//inserirMoeda(conn, "eos", "Eos", "Moeda eos")
 

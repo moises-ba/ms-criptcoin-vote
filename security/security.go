@@ -15,7 +15,7 @@ type User struct {
 func NewUser(username string, password string, role string) (*User, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, fmt.Errorf("cannot hash password: %w", err)
+		return nil, fmt.Errorf("Nao pode obter o hash do password: %w", err)
 	}
 
 	user := &User{

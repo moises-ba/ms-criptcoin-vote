@@ -6,10 +6,12 @@ import (
 	"moises-ba/ms-criptcoin-vote/log"
 	"moises-ba/ms-criptcoin-vote/messaging"
 	"moises-ba/ms-criptcoin-vote/repository"
+	"moises-ba/ms-criptcoin-vote/security"
 	"moises-ba/ms-criptcoin-vote/server/controller"
 	"moises-ba/ms-criptcoin-vote/service"
 	"moises-ba/ms-criptcoin-vote/utils"
 	"net"
+	"time"
 
 	"google.golang.org/grpc"
 )
@@ -47,7 +49,12 @@ func main() {
 	if err != nil {
 		log.Logger().Fatalf("Falha ao escutar porta: %v", err)
 	}
-	s := grpc.NewServer()
+
+	//seguranca
+	jwtValidator := security.NewJWTValidator(security.NewJWTManager(config.GetJWTPassword(), 10*time.Minute))
+	s := grpc.NewServer(
+		grpc.UnaryInterceptor(jwtValidator.UnaryInterceptor()), //validacao com token jwt
+	)
 
 	//registrando controllers grpc
 	pb.RegisterCriptCoinVoterApiServer(s, voterController)

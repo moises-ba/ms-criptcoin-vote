@@ -12,6 +12,7 @@ import (
 	"strconv"
 
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -24,9 +25,18 @@ type voteController struct {
 	voterService service.VoterService
 }
 
+func getUsername(ctx context.Context) string {
+	md, ok := metadata.FromOutgoingContext(ctx)
+	if !ok || len(md["username"]) == 0 {
+		return ""
+	}
+
+	return md["username"][0]
+}
+
 func (s *voteController) Vote(ctx context.Context, in *pb.VoteRequest) (*pb.VoteReply, error) {
 
-	err := s.voterService.Vote(model.Vote{CoinId: in.GetCoinId(), UserId: "XXXX", Approved: in.GetApproved()})
+	err := s.voterService.Vote(model.Vote{CoinId: in.GetCoinId(), UserId: getUsername(ctx), Approved: in.GetApproved()})
 
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, err.Error())
@@ -37,7 +47,7 @@ func (s *voteController) Vote(ctx context.Context, in *pb.VoteRequest) (*pb.Vote
 
 func (s *voteController) UnVote(ctx context.Context, in *pb.VoteRequest) (*pb.VoteReply, error) {
 
-	err := s.voterService.UnVote(model.Vote{CoinId: in.GetCoinId(), UserId: "XXXX"})
+	err := s.voterService.UnVote(model.Vote{CoinId: in.GetCoinId(), UserId: getUsername(ctx)})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}
