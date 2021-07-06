@@ -18,7 +18,7 @@ type Coin struct {
 	Id          string  `bson:"_id,omitempty" json:"uuid,omitempty"` //sigla da moeda
 	Name        string  `bson:"name,omitempty" json:"name,omitempty"`
 	Description string  `bson:"description,omitempty" json:"description,omitempty"`
-	Votes       []*Vote //ignorar na persistencia
+	Votes       []*Vote `bson:"-"`
 }
 
 func (c *Coin) TotalApprovedVotes() int {

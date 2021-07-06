@@ -113,7 +113,7 @@ func (repo *criptCoinMongoRepository) Update(criptCoin model.Coin) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	filter := bson.D{primitive.E{Key: "id", Value: criptCoin.Id}}
+	filter := bson.D{primitive.E{Key: "_id", Value: criptCoin.Id}}
 
 	update := bson.D{{"$set",
 		bson.D{
@@ -140,7 +140,7 @@ func (repo *criptCoinMongoRepository) Delete(criptCoin model.Coin) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	filter := bson.M{"id": criptCoin.Id}
+	filter := bson.M{"_id": criptCoin.Id}
 
 	if _, err := repo.collection.DeleteOne(ctx, filter); err != nil {
 		log.Logger().Error("Falha ao deletar moeda", err)
