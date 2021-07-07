@@ -8,21 +8,25 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
+//atributos de segurança do usuario
 type UserClaims struct {
 	jwt.StandardClaims
 	Username string `json:"username"`
 	Role     string `json:"role"`
 }
 
+//gestor do jwt
 type JWTManager struct {
 	secretKey     string
 	tokenDuration time.Duration
 }
 
+//cria um novo gestor de jwt
 func NewJWTManager(secretKey string, tokenDuration time.Duration) *JWTManager {
 	return &JWTManager{config.GetJWTPassword(), tokenDuration}
 }
 
+//gera um novo token, utilizado para testes, pois o token vem dos clientes
 func (manager *JWTManager) Generate(user *User) (string, error) {
 	claims := UserClaims{
 		StandardClaims: jwt.StandardClaims{
@@ -36,6 +40,7 @@ func (manager *JWTManager) Generate(user *User) (string, error) {
 	return token.SignedString([]byte(manager.secretKey))
 }
 
+//verifica se o token, utilizando a senha de geração do mesmo
 func (manager *JWTManager) Verify(accessToken string) (*UserClaims, error) {
 	token, err := jwt.ParseWithClaims(
 		accessToken,
@@ -43,7 +48,7 @@ func (manager *JWTManager) Verify(accessToken string) (*UserClaims, error) {
 		func(token *jwt.Token) (interface{}, error) {
 			_, ok := token.Method.(*jwt.SigningMethodHMAC)
 			if !ok {
-				return nil, fmt.Errorf("Metodo de assinatura do token inesperada")
+				return nil, fmt.Errorf("metodo de assinatura do token inesperada")
 			}
 
 			return []byte(manager.secretKey), nil
