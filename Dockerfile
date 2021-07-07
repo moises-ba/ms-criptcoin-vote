@@ -10,3 +10,4 @@ RUN CGO_ENABLED=0 go build -o /bin/ms-criptcoin-vote
 
 FROM scratch
 COPY --from=build /bin/ms-criptcoin-vote /bin/ms-criptcoin-vote
+ENTRYPOINT ["/bin/ms-criptcoin-vote"]

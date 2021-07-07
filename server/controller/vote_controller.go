@@ -25,6 +25,7 @@ type voteController struct {
 	voterService service.VoterService
 }
 
+//obtem o nome do usuario apos passar pelo interceptor que extrai do jwt o username do mesmo
 func getUsername(ctx context.Context) string {
 	md, ok := metadata.FromOutgoingContext(ctx)
 	if !ok || len(md["username"]) == 0 {
@@ -34,6 +35,7 @@ func getUsername(ctx context.Context) string {
 	return md["username"][0]
 }
 
+//vota em uma moeda(like ou dislike)
 func (s *voteController) Vote(ctx context.Context, in *pb.VoteRequest) (*pb.VoteReply, error) {
 
 	err := s.voterService.Vote(model.Vote{CoinId: in.GetCoinId(), UserId: getUsername(ctx), Approved: in.GetApproved()})
@@ -45,6 +47,7 @@ func (s *voteController) Vote(ctx context.Context, in *pb.VoteRequest) (*pb.Vote
 	return &pb.VoteReply{Message: "Voto registrado com sucesso: " + in.GetCoinId() + " " + strconv.FormatBool(in.GetApproved())}, nil
 }
 
+//remove um voto
 func (s *voteController) UnVote(ctx context.Context, in *pb.VoteRequest) (*pb.VoteReply, error) {
 
 	err := s.voterService.UnVote(model.Vote{CoinId: in.GetCoinId(), UserId: getUsername(ctx)})
@@ -55,6 +58,7 @@ func (s *voteController) UnVote(ctx context.Context, in *pb.VoteRequest) (*pb.Vo
 	return &pb.VoteReply{Message: "Voto removido com sucesso: " + in.GetCoinId()}, nil
 }
 
+//Endpoint que retorna um stream para acompanhamento de votos em tempo real
 func (s *voteController) FetchVoteStream(in *pb.EmptyParameterVote, stream pb.CriptCoinVoterApi_FetchVoteStreamServer) error {
 
 	consumer := messaging.NewKafkaConsumer()

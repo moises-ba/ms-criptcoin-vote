@@ -11,7 +11,7 @@ services:
       - "9092:9092"
     environment:
       DOCKER_API_VERSION: 1.22
-      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_ADVERTISED_HOST_NAME: kafka
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
     volumes:
@@ -25,14 +25,18 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example  
   ms-criptcoin-vote:
-    image: moisesba/s-criptcoin-vote
+    image: moisesba/ms-criptcoin-vote
     restart: always
     ports:
       - 9090:9090
-    #environment:
-    #  MONGO_SERVER_URL: 
-    #  MONGO_USER:
-    #  MONGO_PASSWORD:
-    #  KAFKA_BROKER_URL:
-    #  KAFKA_VOTE_TOPIC:
-    #  JWT_PASSWORD:      
+    depends_on:
+      - zookeeper
+      - kafka
+      - mongo  
+    environment:
+      MONGO_SERVER_URL: mongodb://mongo:27017
+      KAFKA_BROKER_URL: kafka:9092
+    #  MONGO_USER: root
+    #  MONGO_PASSWORD: example
+    #  KAFKA_VOTE_TOPIC: vote_topic
+    #  JWT_PASSWORD: chave_jwt     
