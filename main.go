@@ -9,7 +9,6 @@ import (
 	"moises-ba/ms-criptcoin-vote/security"
 	"moises-ba/ms-criptcoin-vote/server/controller"
 	"moises-ba/ms-criptcoin-vote/service"
-	"moises-ba/ms-criptcoin-vote/utils"
 	"net"
 	"time"
 
@@ -30,7 +29,7 @@ func main() {
 	defer funcDisconnect()
 
 	//databases
-	mongoCriptcoinDB := mongoClient.Database(utils.GetEnv(config.MONGO_QRCODE_BD, "criptcoinDB"))
+	mongoCriptcoinDB := mongoClient.Database(config.GetMongoCriptCoinDB())
 
 	//repositories
 	voterRepository := repository.NewVoterMongoRepository(mongoCriptcoinDB)
@@ -51,6 +50,7 @@ func main() {
 	}
 
 	//seguranca
+	//exemplo de chamada com o token em clint/client.go
 	jwtValidator := security.NewJWTValidator(security.NewJWTManager(config.GetJWTPassword(), 10*time.Minute))
 	s := grpc.NewServer(
 		grpc.UnaryInterceptor(jwtValidator.UnaryInterceptor()), //validacao com token jwt

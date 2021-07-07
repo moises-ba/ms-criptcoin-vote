@@ -3,13 +3,12 @@ package config
 import "moises-ba/ms-criptcoin-vote/utils"
 
 const (
-	MONGO_SERVER_URL = "MONGO_SERVER_URL"
-	MONGO_USER       = "MONGO_USER"
-	MONGO_PASSWORD   = "MONGO_PASSWORD"
-	MONGO_QRCODE_BD  = "MONGO_QRCODE_BD"
-
-	KAFKA_BROKER_URL = "KAFKA_BROKER_URL"
-	VOTE_TOPIC       = "KAFKA_VOTE_TOPIC"
+	MONGO_SERVER_URL       = "MONGO_SERVER_URL"
+	MONGO_USER             = "MONGO_USER"
+	MONGO_PASSWORD         = "MONGO_PASSWORD"
+	MONGO_CRIPTCOINVOTE_BD = "MONGO_CRIPTCOINVOTE_BD"
+	KAFKA_BROKER_URL       = "KAFKA_BROKER_URL"
+	VOTE_TOPIC             = "KAFKA_VOTE_TOPIC"
 
 	JWT_PASSWORD = "JWT_PASSWORD"
 )
@@ -36,4 +35,8 @@ func GetKafkaBrokerURL() string {
 
 func GetJWTPassword() string {
 	return utils.GetEnv(JWT_PASSWORD, "chave_jwt")
+}
+
+func GetMongoCriptCoinDB() string {
+	return utils.GetEnv(MONGO_CRIPTCOINVOTE_BD, "criptcoinDB")
 }
