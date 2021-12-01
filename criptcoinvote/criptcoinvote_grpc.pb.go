@@ -197,5 +197,5 @@ var CriptCoinVoterApi_ServiceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 	},
-	Metadata: "criptcoinvote.proto",
+	Metadata: "criptcoinvote/criptcoinvote.proto",
 }

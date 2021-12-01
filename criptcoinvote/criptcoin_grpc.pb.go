@@ -277,5 +277,5 @@ var CriptCoinApi_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "criptcoin.proto",
+	Metadata: "criptcoinvote/criptcoin.proto",
 }
